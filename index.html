@@ -1,0 +1,53 @@
+<script>
+
+    /**
+     * Calculates profit after annual tax and vat
+     * @see https://financeinfo.nl/belastingen/belastingschijven/2018/
+     */
+    function calcProfit(totalIncome, subtractVat=true) {
+
+        if (subtractVat) {
+            totalIncome/=1.21;
+        }
+
+        let firstDiskAmount     = 20142;    // disc 1 | taxable amount
+        let firstDiskTax        = 1.3655;   // divider
+
+        let secondDiskAmount    = 48365;    // disc 2 | taxable amount
+        let secondDiskTax       = 1.4085;   // divider
+
+        //(let) thirdDiskAmount = firstDiskAmount + secondDiskAmount
+        let thirdDiskTax = 1.5195;
+        let Tax = 0; // Total taxes at end
+
+        // disc 1, if total income is less then upper bound of first disk
+        if (totalIncome <= firstDiskAmount) {
+            // just return the fraction of the total income
+            return totalIncome / firstDiskTax;
+        }
+
+        // Increase calculated tax by using the full first disk amount
+        Tax += firstDiskAmount / firstDiskTax;
+
+        // Decrease rest of 'to calculate'-income by full first disk amount
+        totalIncome -= firstDiskAmount;
+
+        // disc 2, if (rest) total income is lest then the second disk (or 'part')
+        if (totalIncome <= secondDiskAmount) {
+
+            // return calculated tax of second part with the previous calculated tax
+            return Tax + (totalIncome / secondDiskTax);
+        }
+
+        // Increase calculated tax by using the full second disk amount
+        Tax += (secondDiskAmount / secondDiskTax);
+
+        // Decrease rest of 'to calculate'-income by full second disk amount
+        totalIncome -= secondDiskAmount;
+
+        // disc 3, divide the rest of income or add 0 if nothing left to prevent 'divide by zero'
+        return Tax + (totalIncome > 0 ? totalIncome / thirdDiskTax : 0);
+    }
+
+
+</script>
